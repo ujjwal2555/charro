@@ -10,6 +10,15 @@ The application emphasizes a clean, modern interface following Material Design p
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### November 8, 2025 - Windows Compatibility
+- **Cross-Platform Support**: Added `cross-env` package to enable Windows compatibility
+- **Updated Scripts**: All npm scripts now use `cross-env` for environment variables
+- **Documentation**: Created comprehensive Windows setup guide (WINDOWS_SETUP.md)
+- **README**: Updated with Windows compatibility confirmation and setup options
+- **Result**: Application can now be hosted locally on Windows PCs without any code modifications
+
 ## System Architecture
 
 ### Application Structure
