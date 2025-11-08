@@ -1,0 +1,299 @@
+Build a fully interactive frontend HRMS prototype that implements user & role management, attendance & leave flows, payroll summary & payslip generation, dashboards & charts, and admin/HR/payroll officer views. All data is local-only (in-memory + localStorage) and populated with realistic dummy data. No backend required. All features must be functional and interactive (forms, tables, approvals, edits) but persistence only to browser storage. Include a role switcher to simulate different users and permissions.
+
+Tech stack (recommended)
+
+Framework: React (v18) + React Router
+
+Styling: Tailwind CSS (use default utility classes)
+
+Charts: Recharts (or Chart.js)
+
+UI library optional: Headless UI / Radix for dialogs (but keep design custom/sleek)
+
+State: React Context + localStorage adapter (no external DB)
+
+Build: Vite or Create React App
+
+Linting & testing: ESLint + basic jest/react-testing-library tests (optional)
+
+Pages / Routes
+
+/ — Login (role selector + demo accounts)
+
+/dashboard — Role-aware dashboard (Employee / HR / Admin / Payroll)
+
+/attendance — Mark attendance + monthly calendar + attendance log
+
+/leave — Apply for leave, view requests, approve/reject (role-based workflow)
+
+/employees — Directory with CRUD (Admin/HR), view-only for Employee/Payroll
+
+/payroll — Payrun generator, payslip list, single payslip view, export PDF (frontend)
+
+/reports — Simple analytics pages: attendance summary, leaves summary, payroll summary
+
+/profile — Editable user profile
+
+/settings — Role management, basic app settings (Admin only)
+
+/help — Short in-app help / legend
+
+Key Behaviors / Requirements (must be implemented)
+
+Login & Role switcher
+
+Demo accounts: Admin / HR Officer / Payroll Officer / Employee.
+
+No password required — clicking a demo card signs in as that role.
+
+Also provide a role dropdown in header to quickly impersonate another role for testing.
+
+Role-based access control
+
+Admin: full CRUD across modules + settings.
+
+HR Officer: manage employee profiles, view attendance, allocate leaves, cannot access payroll settings.
+
+Payroll Officer: approve/reject leave requests, run payruns, generate payslips, view payroll reports.
+
+Employee: mark attendance, apply for leave, view own payslips and attendance.
+
+UI should hide or disable actions the current role cannot perform.
+
+Local data model & persistence
+
+Use a JSON data model stored in localStorage under key workzen_demo_data.
+
+On first load, seed localStorage with provided dummy data (see Dummy Data section).
+
+Provide a “Reset demo data” button in Settings.
+
+Attendance
+
+Employees can “Clock In” and “Clock Out” (or “Mark Present” for the day).
+
+Attendance entries include: id, userId, date, inTime, outTime, status (Present/Absent/Half), notes.
+
+Monthly calendar view with color-coded days and daily detail drawer.
+
+HR/Admin can edit attendance records.
+
+Leave management
+
+Employee can apply for leave (type, start date, end date, reason).
+
+Leave statuses: Pending, Approved, Rejected, Cancelled.
+
+Workflow: Employee applies → Payroll/Payroll Officer or Admin (depending on role) approves/rejects.
+
+Leave balance tracking per user (simple counters).
+
+Approvals generate notifications in UI and are reflected in attendance/payroll calculations.
+
+Payroll
+
+Basic payroll generator that creates a payrun for a selected month.
+
+Salary model per employee: basic, hra, otherEarnings, deductions (PF, professionalTax), tax, net.
+
+Payroll calculation uses: base salary prorated by days present (approved leaves included based on type), PF = 12% of basic, professional tax = flat value from user salary settings.
+
+Payroll Officer/Admin can generate/edit payruns and download payslips as a simple PDF-like printable view (frontend only).
+
+Payslip view shows breakdown and allows saving or re-generating.
+
+Dashboard & Analytics
+
+Role-specific dashboard tiles: total employees, today present, pending leaves, payroll expenses this month.
+
+Charts: Attendance over last 30 days (line), Leave distribution by type (pie), Payroll cost trend (bar).
+
+Charts are interactive and respond to date range filters.
+
+Employee directory & profiles
+
+List of employees with search + filter by department/role.
+
+Employee profile modal with personal info, contact, salary details, leave balance, last 3 payslips, attendance summary.
+
+HR/Admin can create/update/delete employees; changes saved to localStorage.
+
+User profile & settings
+
+Users can edit their name, email, contact, and avatar (avatar can be initials or uploaded base64).
+
+Admin can manage roles & system settings (e.g., PF percentage, professional tax).
+
+Notifications & toasts
+
+Show toasts for successful actions (leave submitted, approved, payrun generated, profile updated).
+
+Simple bell icon with list of last N notifications.
+
+Forms & Validation
+
+All forms have client-side validation (required fields, sensible date checks: end >= start).
+
+Inline errors + disable submit when invalid.
+
+Accessibility & Responsiveness
+
+Keyboard navigable modals, aria labels for interactive components.
+
+Fully responsive: sidebar collapses on mobile, key pages stack vertically.
+
+UI/UX & Design
+
+Clean, modern HR dashboard aesthetic with a soft palette (purple/teal accents).
+
+Use cards for metrics, table rows with hover actions, and modals for forms.
+
+Provide a consistent header with user avatar, role label, and quick role switcher.
+
+In tables allow inline actions (edit, delete, approve/reject) and bulk actions for Admin.
+
+Use small micro-animations for modal open/close and toasts.
+
+Dummy Data (copyable JSON)
+Provide this as the seeded data for localStorage:
+
+{
+  "users": [
+    {"id": "u1","name":"Alice Admin","role":"admin","email":"alice@demo.com","department":"Management","salary":{"basic":90000,"hra":18000,"otherEarnings":5000},"leaveBalance":{"annual":18,"sick":10}},
+    {"id": "u2","name":"Harry HR","role":"hr","email":"harry@demo.com","department":"HR","salary":{"basic":60000,"hra":12000,"otherEarnings":3000},"leaveBalance":{"annual":18,"sick":8}},
+    {"id": "u3","name":"Pam Payroll","role":"payroll","email":"pam@demo.com","department":"Finance","salary":{"basic":65000,"hra":13000,"otherEarnings":3000},"leaveBalance":{"annual":18,"sick":8}},
+    {"id": "u4","name":"Eve Employee","role":"employee","email":"eve@demo.com","department":"Engineering","salary":{"basic":50000,"hra":10000,"otherEarnings":2000},"leaveBalance":{"annual":12,"sick":6}},
+    {"id": "u5","name":"Sam Staff","role":"employee","email":"sam@demo.com","department":"Design","salary":{"basic":45000,"hra":9000,"otherEarnings":1500},"leaveBalance":{"annual":12,"sick":6}}
+  ],
+  "attendance": [
+    {"id":"a1","userId":"u4","date":"2025-10-01","inTime":"09:05","outTime":"17:30","status":"Present"},
+    {"id":"a2","userId":"u5","date":"2025-10-01","inTime":"09:15","outTime":"17:10","status":"Present"}
+  ],
+  "leaves": [
+    {"id":"l1","userId":"u4","type":"Annual","start":"2025-10-10","end":"2025-10-12","status":"Pending","reason":"Family travel"},
+    {"id":"l2","userId":"u5","type":"Sick","start":"2025-09-05","end":"2025-09-06","status":"Approved","reason":"Fever"}
+  ],
+  "payruns": [
+    {"id":"p1","month":"2025-09","generatedBy":"u3","totalPayroll":85000,"items":[{"userId":"u4","gross":60000,"deductions":6000,"net":54000},{"userId":"u5","gross":55000,"deductions":5500,"net":49500}]}
+  ],
+  "settings": {"pfPercent":12,"professionalTax":200}
+}
+
+
+Local Calculation Rules (simple)
+
+Gross = basic + hra + otherEarnings
+
+PF = (pfPercent / 100) * basic
+
+Pro-rata: If days present < workingDaysInMonth, prorate basic accordingly
+
+Net = Gross - PF - professionalTax - otherDeductions
+
+Interactive Example Flows (acceptance criteria)
+
+Employee (u4) logs in → marks attendance today → attendance table updates → admin sees new entry.
+
+Employee applies leave for Oct 10–12 → leave appears in Pending → Payroll Officer logs in and approves → status updates to Approved → leave days deduced from leaveBalance; attendance entries for those days show Approved Leave state.
+
+Payroll Officer runs payrun for Sep 2025 → system computes per-user gross/deductions using attendance & leaves → generates payslip → payroll list shows payrun with downloadable payslip.
+
+HR creates a new employee via modal → new record is appended and visible in directory.
+
+Admin changes PF percentage in Settings → payrun calculation uses new PF (%) for next payrun.
+
+Components to build
+
+Auth/Login cards (demo accounts)
+
+Header with role switcher & notifications
+
+Sidebar navigation (collapsible)
+
+Dashboard cards & charts
+
+Attendance calendar & daily drawer
+
+Leave application modal & requests table
+
+Employee table, profile modal, CRUD forms
+
+Payroll generator modal, payrun table, payslip printable component
+
+Settings & small forms
+
+Toast/notification system
+
+Local storage data provider + seed/ reset button
+
+UX copy & microcopy
+
+Buttons: “Clock In”, “Clock Out”, “Apply Leave”, “Approve”, “Reject”, “Generate Payrun”, “Download Payslip”, “Reset Demo Data”
+
+Empty states with CTA: “No attendance yet — Clock in now”, “No pending leaves”
+
+Confirmation modals for destructive actions (Delete employee, Reset data)
+
+Accessibility
+
+Buttons, inputs have proper aria-labels.
+
+Modal traps focus; ESC closes modals.
+
+Color contrast should be sufficient for readability.
+
+Deliverables from Lovable
+
+A complete frontend project (React + Tailwind) in a single downloadable ZIP or Git repo scaffold.
+
+Seeded localStorage demo data and a “Reset demo data” option.
+
+README with run instructions:
+
+npm install
+
+npm run dev
+
+How to switch roles and reset demo data
+
+How to export payslip (print view)
+
+Minimal unit tests for 3 key components (attendance, leave, payroll calc) — optional but preferred.
+
+A short demo script (steps) for the hackathon judges to validate features.
+
+Developer notes / constraints for builder
+
+Do not implement any real authentication/backend — all actions are client-side.
+
+No external APIs for payroll or PDF generation; the payslip should be a printable HTML view (use window.print()).
+
+All data must be editable in-app and persisted to localStorage.
+
+Keep component code modular and documented (propTypes or TypeScript typing recommended).
+
+Commit history: include at least 8 meaningful git commits demonstrating iterative work (seed data, components, pages, role logic, payroll calc, charts, print/payslip, styling).
+
+Acceptance test cases (copy for QA)
+
+Login as any demo role → dashboard renders role-appropriate items.
+
+Employee can mark attendance and see it appear in Monthly log.
+
+Employee can submit a leave request; Payroll/Admin can approve; status updates throughout.
+
+Payroll Officer can create a payrun for a month; payslip is viewable and printable. Calculations should follow specified rules.
+
+Admin can add/edit/delete employees; changes persist on reload.
+
+Reset demo data restores seeded data.
+
+Optional enhancements (if time)
+
+CSV export of employee list and payslips.
+
+Drag-and-drop avatar upload (store base64).
+
+Tiny search autosuggest in directory.
+
+Filterable and paginated tables.,  make sure all the features are working
