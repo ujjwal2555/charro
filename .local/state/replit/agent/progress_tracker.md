@@ -9,3 +9,4 @@ Import completed successfully on November 08, 2025 at 12:49 PM
 - Application running on port 5000
 - Database seeded with test credentials
 - Login page rendering correctly
+- Payroll section confirmed in navigation (accessible to Admin and Payroll roles)
