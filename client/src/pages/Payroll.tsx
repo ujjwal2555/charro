@@ -25,7 +25,8 @@ export default function Payroll() {
   const { currentUser } = useAuth();
   const { toast } = useToast();
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
-  const [viewMode, setViewMode] = useState<'monthly' | 'annually'>('monthly');
+  const [employerCostViewMode, setEmployerCostViewMode] = useState<'monthly' | 'annually'>('monthly');
+  const [employeeCountViewMode, setEmployeeCountViewMode] = useState<'monthly' | 'annually'>('monthly');
 
   const data = getDataStore();
 
@@ -108,7 +109,7 @@ export default function Payroll() {
     setPayslips(generated);
   };
 
-  const employerCostData = viewMode === 'monthly' 
+  const employerCostData = employerCostViewMode === 'monthly' 
     ? [
         { month: 'Jan 2025', cost: 180000 },
         { month: 'Feb 2025', cost: 195000 },
@@ -123,19 +124,19 @@ export default function Payroll() {
         { month: 'Jun 2025', cost: 225000 },
       ];
 
-  const employeeCountData = viewMode === 'monthly'
+  const employeeCountData = employeeCountViewMode === 'monthly'
     ? [
-        { month: 'Jan 2025', count: employees.length },
-        { month: 'Feb 2025', count: employees.length },
-        { month: 'Mar 2025', count: employees.length },
+        { month: 'Jan 2025', count: employees.length || 3 },
+        { month: 'Feb 2025', count: employees.length || 3 },
+        { month: 'Mar 2025', count: employees.length || 3 },
       ]
     : [
-        { month: 'Jan 2025', count: employees.length },
-        { month: 'Feb 2025', count: employees.length },
-        { month: 'Mar 2025', count: employees.length },
-        { month: 'Apr 2025', count: employees.length },
-        { month: 'May 2025', count: employees.length },
-        { month: 'Jun 2025', count: employees.length },
+        { month: 'Jan 2025', count: employees.length || 3 },
+        { month: 'Feb 2025', count: employees.length || 3 },
+        { month: 'Mar 2025', count: employees.length || 3 },
+        { month: 'Apr 2025', count: employees.length || 3 },
+        { month: 'May 2025', count: employees.length || 3 },
+        { month: 'Jun 2025', count: employees.length || 3 },
       ];
 
   const recentPayruns = [
@@ -165,24 +166,17 @@ export default function Payroll() {
         <TabsContent value="dashboard" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-orange-500" />
-                Warnings
-              </h3>
-              <div className="space-y-3">
+              <h3 className="text-lg font-semibold mb-4">Warnings</h3>
+              <div className="space-y-2">
                 {employeesWithoutBankAccount.length > 0 && (
-                  <Alert>
-                    <AlertDescription className="text-sm">
-                      {employeesWithoutBankAccount.length} Employee without Bank A/c
-                    </AlertDescription>
-                  </Alert>
+                  <div className="text-sm text-blue-600 dark:text-blue-400" data-testid="warning-bank-account">
+                    {employeesWithoutBankAccount.length} Employee without Bank A/c
+                  </div>
                 )}
                 {employeesWithoutManager.length > 0 && (
-                  <Alert>
-                    <AlertDescription className="text-sm">
-                      {employeesWithoutManager.length} Employee without Manager
-                    </AlertDescription>
-                  </Alert>
+                  <div className="text-sm text-blue-600 dark:text-blue-400" data-testid="warning-manager">
+                    {employeesWithoutManager.length} Employee without Manager
+                  </div>
                 )}
                 {employeesWithoutBankAccount.length === 0 && employeesWithoutManager.length === 0 && (
                   <p className="text-sm text-muted-foreground">No warnings at this time</p>
@@ -192,12 +186,10 @@ export default function Payroll() {
 
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Payrun</h3>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {recentPayruns.map(payrun => (
-                  <div key={payrun.id} className="flex items-center justify-between p-3 bg-accent rounded-md">
-                    <div>
-                      <p className="font-medium">Payrun for {payrun.month} ({payrun.peopleCount} People)</p>
-                    </div>
+                  <div key={payrun.id} className="text-sm text-blue-600 dark:text-blue-400" data-testid={`payrun-${payrun.id}`}>
+                    Payrun for {payrun.month} ({payrun.peopleCount} People)
                   </div>
                 ))}
               </div>
@@ -211,17 +203,17 @@ export default function Payroll() {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    variant={viewMode === 'annually' ? 'default' : 'outline'}
-                    onClick={() => setViewMode('annually')}
-                    data-testid="button-view-annually"
+                    variant={employerCostViewMode === 'annually' ? 'default' : 'outline'}
+                    onClick={() => setEmployerCostViewMode('annually')}
+                    data-testid="button-employer-cost-annually"
                   >
                     Annually
                   </Button>
                   <Button
                     size="sm"
-                    variant={viewMode === 'monthly' ? 'default' : 'outline'}
-                    onClick={() => setViewMode('monthly')}
-                    data-testid="button-view-monthly"
+                    variant={employerCostViewMode === 'monthly' ? 'default' : 'outline'}
+                    onClick={() => setEmployerCostViewMode('monthly')}
+                    data-testid="button-employer-cost-monthly"
                   >
                     Monthly
                   </Button>
@@ -250,15 +242,17 @@ export default function Payroll() {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    variant={viewMode === 'annually' ? 'default' : 'outline'}
-                    onClick={() => setViewMode('annually')}
+                    variant={employeeCountViewMode === 'annually' ? 'default' : 'outline'}
+                    onClick={() => setEmployeeCountViewMode('annually')}
+                    data-testid="button-employee-count-annually"
                   >
                     Annually
                   </Button>
                   <Button
                     size="sm"
-                    variant={viewMode === 'monthly' ? 'default' : 'outline'}
-                    onClick={() => setViewMode('monthly')}
+                    variant={employeeCountViewMode === 'monthly' ? 'default' : 'outline'}
+                    onClick={() => setEmployeeCountViewMode('monthly')}
+                    data-testid="button-employee-count-monthly"
                   >
                     Monthly
                   </Button>
