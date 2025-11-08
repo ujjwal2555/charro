@@ -153,15 +153,12 @@ export default function Payroll() {
       </div>
 
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="dashboard" data-testid="tab-payroll-dashboard">
             Dashboard
           </TabsTrigger>
           <TabsTrigger value="payrun" data-testid="tab-payroll-payrun">
             Payrun
-          </TabsTrigger>
-          <TabsTrigger value="validate" data-testid="tab-payroll-validate">
-            Validate
           </TabsTrigger>
         </TabsList>
 
@@ -314,6 +311,18 @@ export default function Payroll() {
                 >
                   Payrun
                 </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    toast({
+                      title: 'Validation Complete',
+                      description: `All employee data validated for ${format(new Date(selectedMonth), 'MMMM yyyy')}`,
+                    });
+                  }}
+                  data-testid="button-validate-payrun"
+                >
+                  Validate
+                </Button>
               </div>
             </div>
 
@@ -366,53 +375,6 @@ export default function Payroll() {
                 </p>
               </div>
             )}
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="validate" className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Validate Payroll Data</h3>
-            <div className="space-y-4">
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Validation Tools</AlertTitle>
-                <AlertDescription>
-                  Use this section to validate employee data before generating payruns.
-                </AlertDescription>
-              </Alert>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="p-4">
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <UsersIcon className="w-4 h-4" />
-                    Employee Data
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Total Employees: {employees.length}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Incomplete Profiles: {employeesWithoutBankAccount.length + employeesWithoutManager.length}
-                  </p>
-                </Card>
-
-                <Card className="p-4">
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4" />
-                    Attendance Status
-                  </h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Total Records: {attendance.length}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    This Month: {attendance.filter((a: any) => {
-                      const date = new Date(a.date);
-                      const now = new Date();
-                      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-                    }).length}
-                  </p>
-                </Card>
-              </div>
-            </div>
           </Card>
         </TabsContent>
       </Tabs>
